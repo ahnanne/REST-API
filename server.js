@@ -53,6 +53,7 @@ app.post('/todos', (req, res) => {
     return;
   };
   
+  // else
   todos = [req.body, ...todos];
 
   res.send(todos);
