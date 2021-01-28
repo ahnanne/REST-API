@@ -69,17 +69,14 @@ const render = () => {
   countNum();
 };
 
-// 데이터를 ID순으로 정렬
-const sortData = () => {
-  todos.sort((todo1, todo2) => todo2.id - todo1.id);
+const setTodos = _todos => {
+  todos = _todos;
+  render();
 };
 
 // 가장 먼저 데이터 fetch 해오기
 const fetchTodos = () => {
-  ajax.get('http://localhost:7000/todos', _todos => {
-    todos = _todos;
-    render();
-  });
+  ajax.get('http://localhost:7000/todos', setTodos);
 };
 
 // 새로운 ID 생성 함수
@@ -100,28 +97,19 @@ const addTodo = content => {
     id: generateId(),
     content,
     completed: false
-  },
-  _todos => {
-    todos = _todos;
-    render();
-  });
+  }, setTodos);
 };
 
 // 체크박스 체크 여부에 따라 데이터 갱신하기
 const toggleCompleted = targetId => {
   const { completed } = todos.find(todo => todo.id === +targetId);
-  ajax.patch(`http://localhost:7000/todos/${targetId}`, { completed: !completed }, _todos => {
-    todos = _todos;
-    render();
-  });
+  // const completed = todos.find(todo => todo.id === +targetId).completed;
+  ajax.patch(`http://localhost:7000/todos/${targetId}`, { completed: !completed }, setTodos);
 };
 
 // todo 삭제하기
 const removeTodo = targetId => {
-  ajax.delete(`http://localhost:7000/todos/${targetId}`, _todos => {
-    todos = _todos;
-    render();
-  });
+  ajax.delete(`http://localhost:7000/todos/${targetId}`, setTodos);
 };
 
 // 탭별 item 조회하기(navState 변경하기)
@@ -139,22 +127,13 @@ const changeNavState = (tab, classlist) => {
 };
 
 // Mark all as complete
-const markAllck = ck => {
-  if (!ck.checked) return;
-
-  // else
-  ajax.patch('http://localhost:7000/todos', { completed: true }, newTodo => {
-    todos = newTodo;
-    render();
-  });
+const markAllck = () => {
+  ajax.patch('http://localhost:7000/todos', { completed: true }, setTodos);
 };
 
 // Clear completed
 const clearCompleted = () => {
-  ajax.delete('http://localhost:7000/todos/completed', _todos => {
-    todos = _todos;
-    render();
-  });
+  ajax.delete('http://localhost:7000/todos/completed', setTodos);
 };
 
 // 💚 이벤트 핸들러 등록 모음
@@ -176,11 +155,13 @@ $input.onkeyup = e => {
 // 체크박스 체크 여부에 따라 데이터 갱신하기(이벤트 위임)
 $todos.onchange = e => {
   toggleCompleted(e.target.parentNode.getAttribute('id'), e.target);
+  if ($ckAll.checked) $ckAll.checked = false;
 };
 
 // todo 삭제하기(이벤트 위임)
 $todos.onclick = e => {
   if (e.target.matches('i')) removeTodo(e.target.parentNode.getAttribute('id'));
+  if ($ckAll.checked) $ckAll.checked = false;
 };
 
 // 탭별 item 조회하기(navState 변경하기)
@@ -193,6 +174,7 @@ $nav.onclick = e => {
 
 // Mark all as complete
 $ckAll.onchange = e => {
+  if (!e.target.checked) return;
   markAllck(e.target);
 };
 
