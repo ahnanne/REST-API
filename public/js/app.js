@@ -139,7 +139,8 @@ const changeNavState = (tab, classlist) => {
 };
 
 // Mark all as complete
-const markAllck = () => {
+const markAllck = ck => {
+  if (!ck.checked) return;
   ajax.patch('http://localhost:7000/todos', { completed: true }, newTodo => {
     todos = newTodo;
     render();
@@ -189,8 +190,8 @@ $nav.onclick = e => {
 };
 
 // Mark all as complete
-$ckAll.onchange = () => {
-  markAllck();
+$ckAll.onchange = e => {
+  markAllck(e.target);
 };
 
 // Clear completed
