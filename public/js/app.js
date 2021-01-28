@@ -141,6 +141,8 @@ const changeNavState = (tab, classlist) => {
 // Mark all as complete
 const markAllck = ck => {
   if (!ck.checked) return;
+
+  // else
   ajax.patch('http://localhost:7000/todos', { completed: true }, newTodo => {
     todos = newTodo;
     render();
