@@ -20,18 +20,18 @@ const ajax = (() => {
   };
 
   return {
-    get(url, resolve) {
+    get(url) {
       return req('GET', url);
       // 프로미스를 반환해줘야 app.js에서 후속 처리 메서드를 사용할 수 있음.
       // return문 없으면 get 메서드의 반환값으로 프로미스를 받을 수 없음.
     },
-    post(url, payload, resolve) {
+    post(url, payload) {
       return req('POST', url, payload);
     },
-    patch(url, payload, resolve) {
+    patch(url, payload) {
       return req('PATCH', url, payload);
     },
-    delete(url, resolve) {
+    delete(url) {
       return req('DELETE', url);
     }
   };
