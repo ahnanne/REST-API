@@ -1,4 +1,4 @@
-import ajax from './promise.js';
+import req from './fetch.js';
 
 // global
 let todos = [];
@@ -67,7 +67,8 @@ const setTodos = _todos => {
 
 // 가장 먼저 데이터 fetch 해오기
 const fetchTodos = () => {
-  ajax.get('http://localhost:7000/todos')
+  req.get('/todos')
+    .then(response => response.json())
     .then(setTodos)
     .catch(console.error);
 };
@@ -77,11 +78,12 @@ const generateId = () => (todos.length ? Math.max(...todos.map(todo => todo.id))
 
 // 새로운 todo 추가하기
 const addTodo = content => {
-  ajax.post('http://localhost:7000/todos', {
+  req.post('/todos', {
     id: generateId(),
     content,
     completed: false
   })
+    .then(response => response.json())
     .then(setTodos)
     .catch(console.error);
 };
@@ -90,14 +92,16 @@ const addTodo = content => {
 const toggleCompleted = targetId => {
   const { completed } = todos.find(todo => todo.id === +targetId);
   // const completed = todos.find(todo => todo.id === +targetId).completed;
-  ajax.patch(`http://localhost:7000/todos/${targetId}`, { completed: !completed })
+  req.patch(`/todos/${targetId}`, { completed: !completed })
+    .then(response => response.json())
     .then(setTodos)
     .catch(console.error);
 };
 
 // todo 삭제하기
 const removeTodo = targetId => {
-  ajax.delete(`http://localhost:7000/todos/${targetId}`)
+  req.delete(`/todos/${targetId}`)
+    .then(response => response.json())
     .then(setTodos)
     .catch(console.error);
 };
@@ -118,14 +122,16 @@ const changeNavState = (tab, classlist) => {
 
 // Mark all as complete
 const markAllck = () => {
-  ajax.patch('http://localhost:7000/todos', { completed: true })
+  req.patch('/todos', { completed: true })
+    .then(response => response.json())
     .then(setTodos)
     .catch(console.error);
 };
 
 // Clear completed
 const clearCompleted = () => {
-  ajax.delete('http://localhost:7000/todos/completed')
+  req.delete('/todos/completed')
+    .then(response => response.json())
     .then(setTodos)
     .catch(console.error);
 };

@@ -16,8 +16,8 @@ import isDuplicated from './utils/isDuplicated.js';
 // const cors = require('cors');
 
 let todos = [
-  { id: 3, content: 'JS', completed: false },
-  { id: 5, content: 'CSS', completed: true },
+  { id: 3, content: 'CSS', completed: false },
+  { id: 5, content: 'JS', completed: true },
   { id: 1, content: 'HTML', completed: false }
 ];
 
