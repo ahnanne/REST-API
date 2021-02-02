@@ -66,8 +66,7 @@ const setTodos = _todos => {
 // 가장 먼저 데이터 fetch 해오기
 const fetchTodos = () => {
   axios.get('/todos')
-    .then(res => todos = res.data)
-    .then(setTodos)
+    .then(res => setTodos(res.data))
     .catch(console.error);
 };
 
@@ -90,8 +89,7 @@ const addTodo = content => {
     content,
     completed: false
   })
-  .then(res => todos = res.data)
-  .then(setTodos)
+  .then(res => setTodos(res.data))
   .catch(console.error);
 };
 
@@ -100,16 +98,14 @@ const toggleCompleted = targetId => {
   const { completed } = todos.find(todo => todo.id === +targetId);
   // const completed = todos.find(todo => todo.id === +targetId).completed;
   axios.patch(`/todos/${targetId}`, { completed: !completed })
-  .then(res => todos = res.data)
-  .then(setTodos)
+  .then(res => setTodos(res.data))
   .catch(console.error);
 };
 
 // todo 삭제하기
 const removeTodo = targetId => {
   axios.delete(`/todos/${targetId}`)
-  .then(res => todos = res.data)
-  .then(setTodos)
+  .then(res => setTodos(res.data))
   .catch(console.error);
 };
 
@@ -130,16 +126,14 @@ const changeNavState = (tab, classlist) => {
 // Mark all as complete
 const markAllck = () => {
   axios.patch('/todos', { completed: true })
-  .then(res => todos = res.data)
-  .then(setTodos)
+  .then(res => setTodos(res.data))
   .catch(console.error);
 };
 
 // Clear completed
 const clearCompleted = () => {
   axios.delete('/todos/completed')
-  .then(res => todos = res.data)
-  .then(setTodos)
+  .then(res => setTodos(res.data))
   .catch(console.error);
 };
 
