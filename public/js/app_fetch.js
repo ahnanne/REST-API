@@ -1,4 +1,5 @@
-import req from './fetch.js';
+// import { response } from 'express';
+// import req from './fetch.js';
 
 // global
 let todos = [];
@@ -67,7 +68,7 @@ const setTodos = _todos => {
 
 // 가장 먼저 데이터 fetch 해오기
 const fetchTodos = () => {
-  req.get('/todos')
+  fetch('/todos')
     .then(response => response.json())
     .then(setTodos)
     .catch(console.error);
@@ -78,10 +79,14 @@ const generateId = () => (todos.length ? Math.max(...todos.map(todo => todo.id))
 
 // 새로운 todo 추가하기
 const addTodo = content => {
-  req.post('/todos', {
-    id: generateId(),
-    content,
-    completed: false
+  fetch('/todos', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+        id: generateId(),
+        content,
+        completed: false
+      })
   })
     .then(response => response.json())
     .then(setTodos)
@@ -92,7 +97,11 @@ const addTodo = content => {
 const toggleCompleted = targetId => {
   const { completed } = todos.find(todo => todo.id === +targetId);
   // const completed = todos.find(todo => todo.id === +targetId).completed;
-  req.patch(`/todos/${targetId}`, { completed: !completed })
+  fetch(`/todos/${targetId}`, {
+    method: 'PATCH',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ completed: !completed })
+  })
     .then(response => response.json())
     .then(setTodos)
     .catch(console.error);
@@ -100,7 +109,9 @@ const toggleCompleted = targetId => {
 
 // todo 삭제하기
 const removeTodo = targetId => {
-  req.delete(`/todos/${targetId}`)
+  fetch(`/todos/${targetId}`, {
+    method: 'DELETE'
+  })
     .then(response => response.json())
     .then(setTodos)
     .catch(console.error);
@@ -122,7 +133,11 @@ const changeNavState = (tab, classlist) => {
 
 // Mark all as complete
 const markAllck = () => {
-  req.patch('/todos', { completed: true })
+  fetch('/todos', {
+    method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ completed: true })
+  })
     .then(response => response.json())
     .then(setTodos)
     .catch(console.error);
@@ -130,7 +145,9 @@ const markAllck = () => {
 
 // Clear completed
 const clearCompleted = () => {
-  req.delete('/todos/completed')
+  fetch('/todos/completed', {
+    method: 'DELETE'
+  })
     .then(response => response.json())
     .then(setTodos)
     .catch(console.error);
