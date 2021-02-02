@@ -1,4 +1,4 @@
-import ajax from './xhr.js';
+import ajax from './promise.js';
 
 // global
 let todos = [];
