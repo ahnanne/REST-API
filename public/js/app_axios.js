@@ -132,7 +132,7 @@ const markAllck = () => {
   axios.patch('/todos', { completed: true })
   .then(res => todos = res.data)
   .then(setTodos)
-  .catch(console.error);;
+  .catch(console.error);
 };
 
 // Clear completed
@@ -140,7 +140,7 @@ const clearCompleted = () => {
   axios.delete('/todos/completed')
   .then(res => todos = res.data)
   .then(setTodos)
-  .catch(console.error);;
+  .catch(console.error);
 };
 
 // 💚 이벤트 핸들러 등록 모음
