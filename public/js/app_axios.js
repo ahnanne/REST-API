@@ -1,3 +1,5 @@
+// import axios from "axios";
+
 // global
 let todos = [];
 let navState = 'All';
@@ -65,8 +67,16 @@ const setTodos = _todos => {
 
 // 가장 먼저 데이터 fetch 해오기
 const fetchTodos = () => {
-  axios.get('/todos')
+  /*
+  axios
+    .get('/todos')
     .then(res => setTodos(res.data))
+    .catch(console.error);
+  */
+
+  axios
+    .get('/todos')
+    .then(({ data: _todos }) => setTodos(_todos))
     .catch(console.error);
 };
 
