@@ -1,17 +1,36 @@
 {
   "name": "simple-rest-api-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "- JSON 서버에서는 벌크 처리(한 번의 요청만으로 데이터를 일률적으로 패치 및 삭제해주는 것)를 지원하지 않는다.\r   > 데이터는 원래 한 번에 하나씩만 처리하는 것이 원칙임. 다량의 데이터를 한꺼번에 조작하다보면 실수할 위험이 크기 때문임.\r   > 따라서 안정성을 추구한다면 벌크 처리 없이 그냥 여러번 리퀘스트를 날리는 게 더 좋은 선택일 수 있음.\r - Express로 페이크 서버를 만들면 벌크 처리를 직접 구현할 수 있다.\r - Todos 예제에서도 벌크 처리가 필요하므로, JSON 서버만으로 Todos v4.0을 만드는 데에는 한계가 있어 Express 페이크 서버를 만들고 실습하기로 한다.\r   - 본 Todos 예제에서 벌크 처리가 필요한 기능은 ①Mark all as complete과 ②Clear completed이다.\r #### 실습 준비하기(요약)\r - Express를 설치하며 생성해놓은 public 루트 디렉토리에 `index.html`, `css/style.css`, `js/app.js`, `js/xhr.js` 파일을 위치시킨다.\r   - 이하의 과정을 시작하기 전 `index.html`, `style.css`, `xhr.js` 파일은 완전히 작성된 상태여야 한다.\r - `xhr.js`의 `ajax` 객체를 `export`시킨다.\r   ```js\r   export default ajax;\r   ```\r - `app.js`에서 이를 `import`한다.\r   ```js\r   import ajax from './xhr.js';\r   ```\r - `index.html`에서 `<script>` 태그로 `app.js` 파일을 로드해온다.\r   ```html\r     <script type=\"module\" src=\"js/app.js\"></script>\r   ```\r - 페이크 서버를 켜고 모듈 연결이 정상적으로 되는지 확인한 뒤 `app.js` 파일의 코드 작성을 시작한다. 😊",
   "main": "index.js",
-  "type": "module",
   "scripts": {
-    "start": "nodemon server"
+    "start": "nodemon server",
+    "build": "webpack -w"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "axios": "^0.21.1",
     "cors": "^2.8.5",
     "express": "^4.17.1"
-  }
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.12.13",
+    "@babel/core": "^7.12.13",
+    "@babel/plugin-proposal-class-properties": "^7.12.13",
+    "@babel/preset-env": "^7.12.13",
+    "babel-loader": "^8.2.2",
+    "webpack": "^5.20.0",
+    "webpack-cli": "^4.5.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahnanne/REST-API.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ahnanne/REST-API/issues"
+  },
+  "homepage": "https://github.com/ahnanne/REST-API#readme"
 }

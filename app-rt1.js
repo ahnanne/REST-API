@@ -1,5 +1,5 @@
-// import { response } from 'express';
-// import req from './fetch.js';
+// module
+import ajax from './app27';
 
 // global
 let todos = [];
@@ -36,9 +36,16 @@ const countNum = () => {
 const render = () => {
   let html = '';
 
-  todos.sort((todo1, todo2) => todo2.id - todo1.id);
-
   // 조회 중인 탭별 렌더링
+  /*
+  const _todos = todos.filter(todo => {
+    if (navState === 'All') return true;
+    else if (navState === 'Active') return !todo.completed;
+
+    return todo.completed;
+  });
+  */
+  // 위 코드를 삼항 조건 연산자를 사용하여 바꿔보면 아래와 같음.
   const _todos = todos.filter(todo => navState === 'All' ? true : (navState === 'Active' ? !todo.completed : todo.completed));
 
   _todos.forEach(({
@@ -61,60 +68,68 @@ const render = () => {
   countNum();
 };
 
-const setTodos = _todos => {
-  todos = _todos;
-  render();
+// 데이터를 ID순으로 정렬
+const sortData = () => {
+  todos.sort((todo1, todo2) => todo2.id - todo1.id);
 };
 
-// 가장 먼저 데이터 fetch 해오기
+// 가장 먼저 데이터 fetch 해오기 (GET)
+// ajax 객체
 const fetchTodos = () => {
-  fetch('/todos')
-    .then(response => response.json())
-    .then(setTodos)
-    .catch(console.error);
+  // TODO: 데이터 취득(잠정 처리)
+  ajax.get('/todos', _todos => {
+    todos = _todos;
+    render();
+  });
+  // sortData();
 };
 
 // 새로운 ID 생성 함수
-const generateId = () => (todos.length ? Math.max(...todos.map(todo => todo.id)) + 1 : 1);
+const generateId = () => {
+  let maxId = -Infinity;
 
-// 새로운 todo 추가하기
-const addTodo = content => {
-  fetch('/todos', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
-        id: generateId(),
-        content,
-        completed: false
-      })
-  })
-    .then(response => response.json())
-    .then(setTodos)
-    .catch(console.error);
+  if (todos[0] === undefined) return 1;
+  todos.forEach(todo => {
+    if (todo.id > maxId) maxId = todo.id;
+  });
+
+  return maxId + 1;
 };
 
-// 체크박스 체크 여부에 따라 데이터 갱신하기
+// 새로운 todo 추가하기 (POST)
+const addTodo = content => {
+  ajax.post('/todos', {
+    id: generateId(),
+    content,
+    completed: false
+  },
+  newTodo => {
+    todos = [newTodo, ...todos];
+    render();
+  });
+  // 여기서 render() 하는 것은 동기식 발상
+  // ajax.post는 비동기 함수인바 여기 있는 함수가 ajax.post보다 먼저 실행이 됨.
+};
+
+// 체크박스 체크 여부에 따라 데이터 갱신하기 (PATCH)
 const toggleCompleted = targetId => {
   const { completed } = todos.find(todo => todo.id === +targetId);
-  // const completed = todos.find(todo => todo.id === +targetId).completed;
-  fetch(`/todos/${targetId}`, {
-    method: 'PATCH',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ completed: !completed })
-  })
-    .then(response => response.json())
-    .then(setTodos)
-    .catch(console.error);
+  ajax.patch(`/todos/${targetId}`, { completed: !completed }, updatedTodo => {
+    todos = todos.map(todo => todo.id === +targetId ? updatedTodo : todo);
+  });
+
+  render();
 };
 
-// todo 삭제하기
+// todo 삭제하기 (DELETE)
 const removeTodo = targetId => {
-  fetch(`/todos/${targetId}`, {
-    method: 'DELETE'
-  })
-    .then(response => response.json())
-    .then(setTodos)
-    .catch(console.error);
+  ajax.delete(`/todos/${targetId}`, () => {
+    todos = todos.filter(todo => todo.id !== +targetId);
+    render();
+  });
+  todos = todos.filter(todo => todo.id !== +targetId);
+
+  render();
 };
 
 // 탭별 item 조회하기(navState 변경하기)
@@ -131,31 +146,26 @@ const changeNavState = (tab, classlist) => {
   render();
 };
 
-// Mark all as complete
+// 🎈Mark all as complete (PATCH)
 const markAllck = () => {
-  fetch('/todos', {
-    method: 'PATCH',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ completed: true })
-  })
-    .then(response => response.json())
-    .then(setTodos)
-    .catch(console.error);
+  todos = todos.map(todo => ({
+    ...todo,
+    completed: true
+  }));
+
+  render();
 };
 
-// Clear completed
+// Clear completed (DELETE)
 const clearCompleted = () => {
-  fetch('/todos/completed', {
-    method: 'DELETE'
-  })
-    .then(response => response.json())
-    .then(setTodos)
-    .catch(console.error);
+  todos = todos.filter(todo => todo.completed !== true);
+
+  render();
 };
 
 // 💚 이벤트 핸들러 등록 모음
 // 가장 먼저 데이터 fetch 해오기
-document.addEventListener('DOMContentLoaded', fetchTodos);
+document.addEventListener('DOMContentLoaded', fetchTodos());
 
 // 새로운 todo 추가하기
 $input.onkeyup = e => {
@@ -172,13 +182,11 @@ $input.onkeyup = e => {
 // 체크박스 체크 여부에 따라 데이터 갱신하기(이벤트 위임)
 $todos.onchange = e => {
   toggleCompleted(e.target.parentNode.getAttribute('id'), e.target);
-  if ($ckAll.checked) $ckAll.checked = false;
 };
 
 // todo 삭제하기(이벤트 위임)
 $todos.onclick = e => {
   if (e.target.matches('i')) removeTodo(e.target.parentNode.getAttribute('id'));
-  if ($ckAll.checked) $ckAll.checked = false;
 };
 
 // 탭별 item 조회하기(navState 변경하기)
@@ -190,9 +198,8 @@ $nav.onclick = e => {
 };
 
 // Mark all as complete
-$ckAll.onchange = e => {
-  if (!e.target.checked) return;
-  markAllck(e.target);
+$ckAll.onchange = () => {
+  markAllck();
 };
 
 // Clear completed

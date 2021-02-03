@@ -1,19 +1,22 @@
 // express 서버 사용하여 페이크 서버 만들기
-import express from 'express';
-import cors from 'cors';
+const express = require('express');
+const cors = require('cors');
 
-import isEmptyObject from './utils/isEmptyObject.js';
-// ESM에서는 확장자명 생략하면 안됨! 생략해서 에러난 적 있음. 😭
-import isDuplicated from './utils/isDuplicated.js';
+const isDuplicated = (array, id) => array.map(item => item.id).includes(id);
+
+const isPlainObject = o => {
+  if ((typeof o === 'object') && (o.constructor === Object)) return true;
+};
+const isEmpty = o => {
+  if (Object.keys(o).length === 0) return true;
+  // !Object.keys(o).length;
+};
+
+const isEmptyObject = o => isPlainObject(o) && isEmpty(o);
 
 // import todos from '.data/todos.js';
 // "ESM 방식으로" import를 하면 기본적으로 다 const로 바뀜. 즉 read-only가 됨.
 // 따라서 todos 데이터처럼 가공을 해서 변경시켜야 하는 데이터는 이렇게 모듈화하면 안됨.
-
-// 모듈을 사용하므로 주석 처리한 부분은 필요 없음.
-// const express = require('express');
-// 교차 출처 리소스 공유(CORS) 방식
-// const cors = require('cors');
 
 let todos = [
   { id: 3, content: 'CSS', completed: false },
