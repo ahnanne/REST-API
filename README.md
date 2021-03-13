@@ -10,7 +10,6 @@
   - 본 Todos 예제에서 벌크 처리가 필요한 기능은 ①Mark all as complete과 ②Clear completed이다.
 #### 실습 준비하기(요약)
 - Express를 설치하며 생성해놓은 public 루트 디렉토리에 `index.html`, `css/style.css`, `js/app.js`, `js/xhr.js` 파일을 위치시킨다.
-  - 이하의 과정을 시작하기 전 `index.html`, `style.css`, `xhr.js` 파일은 완전히 작성된 상태여야 한다.
 - `xhr.js`의 `ajax` 객체를 `export`시킨다.
   ```js
   export default ajax;
